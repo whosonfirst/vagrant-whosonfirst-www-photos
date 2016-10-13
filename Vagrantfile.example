@@ -71,45 +71,39 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
 
-sudo apt-get update
-sudo apt-get upgrade -y
-sudo apt-get install -y git
-
 if [ ! -d /usr/local/mapzen/ ]
 then
   sudo mkdir /usr/local/mapzen/
-  sudo chown -R vagrant.vagrant /usr/local/mapzen/
+fi
+
+sudo chown -R vagrant:vagrant /usr/local/mapzen/
+
+# If whosonfirst-www-photos exists, we'll assume it's from a folder sync, which
+# means we need to take care of the templates_c file permissions.
+if [ -d /usr/local/mapzen/whosonfirst-www-photos ] ; then
+  rm -rf /usr/local/mapzen/whosonfirst-www-photos/www/templates_c
+  mkdir -p /usr/local/mapzen/smarty/templates_c
+  chown www-data:www-data /usr/local/mapzen/smarty/templates_c
+  ln -s /usr/local/mapzen/smarty/templates_c /usr/local/mapzen/whosonfirst-www-photos/www/templates_c
 fi
 
 if [ ! -d /usr/local/mapzen/whosonfirst-www-photos ]
 then
+  sudo apt-get update
+  sudo apt-get install -y git
   git clone https://github.com/whosonfirst/whosonfirst-www-photos.git /usr/local/mapzen/whosonfirst-www-photos
   cd /usr/local/mapzen/whosonfirst-www-photos
   git remote rm origin
   git remote add origin git@github.com:whosonfirst/whosonfirst-www-photos.git
-  sudo chown -R vagrant.vagrant /usr/local/mapzen/whosonfirst-www-photos
+  sudo chown -R vagrant:vagrant /usr/local/mapzen/whosonfirst-www-photos
   cd -
 fi
 
-# Note to developers
-# ------------------
-# ... if you enabled the synced_folder above, you'll want to uncomment the
-# following:
-#if [ ! -d /usr/local/mapzen/smarty/templates_c ] ; then
-#  rm -rf /usr/local/mapzen/whosonfirst-www-photos/www/templates_c
-#  mkdir -p /usr/local/mapzen/smarty/templates_c
-#  chown www-data:www-data /usr/local/mapzen/smarty/templates_c
-#  ln -s /usr/local/mapzen/smarty/templates_c /usr/local/mapzen/whosonfirst-www-photos/www/templates_c
-#fi
-
 echo "+---------------------------------------------------------+"
 echo "|                                                         |"
-echo "|   Thank you for installing WOF Photos.                  |"
-echo "|                                                         |"
-echo "|   cd /usr/local/mapzen/whosonfirst-www-photos           |"
-echo "|   make setup                                            |"
-echo "|                                                         |"
-echo "|   https://localhost:8998/                               |"
+echo "|   Next steps:                                           |"
+echo "|       cd /usr/local/mapzen/whosonfirst-www-photos       |"
+echo "|       make setup                                        |"
 echo "|                                                         |"
 echo "+---------------------------------------------------------+"
 
