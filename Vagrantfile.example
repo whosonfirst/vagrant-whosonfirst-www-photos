@@ -105,6 +105,8 @@ echo "|   Next steps:                                           |"
 echo "|       cd /usr/local/mapzen/whosonfirst-www-photos       |"
 echo "|       make setup                                        |"
 echo "|                                                         |"
+echo "|       https://localhost:8998/                           |"
+echo "|                                                         |"
 echo "+---------------------------------------------------------+"
 
   SHELL
